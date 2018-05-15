@@ -62,7 +62,7 @@ class UNet(nn.Module):
         self.conv85 = nn.Conv2d(in_channels = 16, out_channels = 16, kernel_size = kern3, padding = pad)
         self.act86 = nn.ReLU()
 
-        self.convT91 = nn.ConvTranspose2d(in_channels = 16, out_channels =  8, kern_size = kern2, stride = 2, padding = pad2)
+        self.convT91 = nn.ConvTranspose2d(in_channels = 16, out_channels =  8, kernel_size = kern2, stride = 2, padding = pad2)
         self.cat92 = concatenate([self.convT91, self.act14])
         self.conv93 = nn.Conv2d(in_channels = 8, out_channels = 8, kernel_size = kern3, padding = pad)
         self.act94 = nn.ReLU()
