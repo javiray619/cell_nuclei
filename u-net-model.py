@@ -49,7 +49,7 @@ class UNet(nn.Module):
         self.act66 = nn.ReLU()
 
         self.convT71 = nn.ConvTranspose2d(in_channels = 64, out_channels =  32, kern_size = kern2, stride = 2, padding = pad2)
-        self.cat72 = concatenate([self.convT71, self.gact34])
+        self.cat72 = concatenate([self.convT71, self.act34])
         self.conv73 = nn.Conv2d(in_channels = 32, out_channels = 32, kernel_size = kern3, padding = pad)
         self.act74 = nn.ReLU()
         self.conv75 = nn.Conv2d(in_channels = 32, out_channels = 32, kernel_size = kern3, padding = pad)
@@ -73,8 +73,8 @@ class UNet(nn.Module):
         self.output_conv = Conv2d(in_channels = 8, out_channels = 1, kernel_size = 1)
         self.output = nn.Sigmoid()
 
-    def forward(self, input):
-        x1 = self.conv11(input)
+    def forward(self, x):
+        x1 = self.conv11(x)
         x2 = self.act12(x1)
         x3 = self.conv13(x2)
         x4 = self.act14(x3)
