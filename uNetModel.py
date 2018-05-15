@@ -3,11 +3,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
+# python 3 confusing imports :(
+#from .unet_parts import *
 
 class UNet(nn.Module):
     def __init__(self):
-        super(self).__init__()
+        super(UNet, self).__init__()
         kern3 = 3
         kern2 = 2
         pad = samePad(kern3, 1)
@@ -42,28 +43,28 @@ class UNet(nn.Module):
 
         pad2 = samePad(kern2, 2)
         self.convT61 = nn.ConvTranspose2d(in_channels = 128, out_channels =  64, kern_size = kern2, stride = 2, padding = pad2)
-        self.cat62 = concatenate([self.convT61, self.act44])
+        self.cat62 = concatenate([self.g61, self.g44])
         self.conv63 = nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = kern3, padding = pad)
         self.act64 = nn.ReLU()
         self.conv65 = nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = kern3, padding = pad)
         self.act66 = nn.ReLU()
 
         self.convT71 = nn.ConvTranspose2d(in_channels = 64, out_channels =  32, kern_size = kern2, stride = 2, padding = pad2)
-        self.cat72 = concatenate([self.convT71, self.act34])
+        self.cat72 = concatenate([self.g71, self.g34])
         self.conv73 = nn.Conv2d(in_channels = 32, out_channels = 32, kernel_size = kern3, padding = pad)
         self.act74 = nn.ReLU()
         self.conv75 = nn.Conv2d(in_channels = 32, out_channels = 32, kernel_size = kern3, padding = pad)
         self.act76 = nn.ReLU()
 
         self.convT81 = nn.ConvTranspose2d(in_channels = 32, out_channels =  16, kern_size = kern2, stride = 2, padding = pad2)
-        self.cat82 = concatenate([self.convT81, self.act24])
+        self.cat82 = concatenate([self.g81, self.g24])
         self.conv83 = nn.Conv2d(in_channels = 16, out_channels = 16, kernel_size = kern3, padding = pad)
         self.act84 = nn.ReLU()
         self.conv85 = nn.Conv2d(in_channels = 16, out_channels = 16, kernel_size = kern3, padding = pad)
         self.act86 = nn.ReLU()
 
         self.convT91 = nn.ConvTranspose2d(in_channels = 16, out_channels =  8, kern_size = kern2, stride = 2, padding = pad2)
-        self.cat92 = concatenate([self.convT91, self.act14])
+        self.cat92 = concatenate([self.g91, self.g14])
         self.conv93 = nn.Conv2d(in_channels = 8, out_channels = 8, kernel_size = kern3, padding = pad)
         self.act94 = nn.ReLU()
         self.conv95 = nn.Conv2d(in_channels = 8, out_channels = 8, kernel_size = kern3, padding = pad)
@@ -135,5 +136,5 @@ class UNet(nn.Module):
         x51 = self.output(x50)
         return x51
 
-    def samePad(filter, stride):
-        return int(float(filter - stride)/2)
+def samePad(filterSize, stride):
+    return int(float(filterSize - stride)/2)
