@@ -3,137 +3,89 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
+# python 3 confusing imports :(
+#from .unet_parts import *
 
 class UNet(nn.Module):
     def __init__(self):
-        super(self).__init__()
-        kern3 = 3
-        kern2 = 2
-        pad = samePad(kern3, 1)
-        self.conv11 = nn.Conv2d(in_channels = 3, out_channels = 8, kernel_size = kern3, padding = pad)
-        self.act12 = nn.ReLU()
-        self.conv13 = nn.Conv2d(in_channels = 8, out_channels = 8, kernel_size = kern3, padding = pad)
-        self.act14 = nn.ReLU()
+        super().__init__()
+        pad = samePad(3, 1)
+        self.conv11 = nn.Conv2d(in_channels = 3, out_channels = 8, kernel_size = 3, padding = pad)
+        self.conv13 = nn.Conv2d(in_channels = 8, out_channels = 8, kernel_size = 3, padding = pad)
         self.pool15 = nn.MaxPool2d(kernel_size = 2)
 
-        self.conv21 = nn.Conv2d(in_channels = 8, out_channels = 16, kernel_size = kern3, padding = pad)
-        self.act22 = nn.ReLU()
-        self.conv23 = nn.Conv2d(in_channels = 16, out_channels = 16, kernel_size = kern3, padding = pad)
-        self.act24 = nn.ReLU()
+        self.conv21 = nn.Conv2d(in_channels = 8, out_channels = 16, kernel_size = 3, padding = pad)
+        self.conv23 = nn.Conv2d(in_channels = 16, out_channels = 16, kernel_size = 3, padding = pad)
         self.pool25 = nn.MaxPool2d(kernel_size = 2)
 
-        self.conv31 = nn.Conv2d(in_channels = 16, out_channels = 32, kernel_size = kern3, padding = pad)
-        self.act32 = nn.ReLU()
-        self.conv33 = nn.Conv2d(in_channels = 32, out_channels = 32, kernel_size = kern3, padding = pad)
-        self.act34 = nn.ReLU()
+        self.conv31 = nn.Conv2d(in_channels = 16, out_channels = 32, kernel_size = 3, padding = pad)
+        self.conv33 = nn.Conv2d(in_channels = 32, out_channels = 32, kernel_size = 3, padding = pad)
         self.pool35 = nn.MaxPool2d(kernel_size = 2)
 
-        self.conv41 = nn.Conv2d(in_channels = 32, out_channels = 64, kernel_size = kern3, padding = pad)
-        self.act42 = nn.ReLU()
-        self.conv43 = nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = kern3, padding = pad)
-        self.relu44 = nn.ReLU()
+        self.conv41 = nn.Conv2d(in_channels = 32, out_channels = 64, kernel_size = 3, padding = pad)
+        self.conv43 = nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = 3, padding = pad)
         self.pool45 = nn.MaxPool2d(kernel_size = 2)
 
-        self.conv51 = nn.Conv2d(in_channels = 64, out_channels = 128, kernel_size = kern3, padding = pad)
-        self.act52 = nn.ReLU()
-        self.conv53 = nn.Conv2d(in_channels = 128, out_channels = 128, kernel_size = kern3, padding = pad)
-        self.act54 = nn.ReLU()
-
-        pad2 = samePad(kern2, 2)
-        self.convT61 = nn.ConvTranspose2d(in_channels = 128, out_channels =  64, kernel_size = kern2, stride = 2, padding = pad2)
-        self.cat62 = concatenate([self.convT61, self.act44])
-        self.conv63 = nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = kern3, padding = pad)
-        self.act64 = nn.ReLU()
-        self.conv65 = nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = kern3, padding = pad)
-        self.act66 = nn.ReLU()
-
-        self.convT71 = nn.ConvTranspose2d(in_channels = 64, out_channels =  32, kernel_size = kern2, stride = 2, padding = pad2)
-        self.cat72 = concatenate([self.convT71, self.act34])
-        self.conv73 = nn.Conv2d(in_channels = 32, out_channels = 32, kernel_size = kern3, padding = pad)
-        self.act74 = nn.ReLU()
-        self.conv75 = nn.Conv2d(in_channels = 32, out_channels = 32, kernel_size = kern3, padding = pad)
-        self.act76 = nn.ReLU()
-
-        self.convT81 = nn.ConvTranspose2d(in_channels = 32, out_channels =  16, kernel_size = kern2, stride = 2, padding = pad2)
-        self.cat82 = concatenate([self.convT81, self.act24])
-        self.conv83 = nn.Conv2d(in_channels = 16, out_channels = 16, kernel_size = kern3, padding = pad)
-        self.act84 = nn.ReLU()
-        self.conv85 = nn.Conv2d(in_channels = 16, out_channels = 16, kernel_size = kern3, padding = pad)
-        self.act86 = nn.ReLU()
-
-        self.convT91 = nn.ConvTranspose2d(in_channels = 16, out_channels =  8, kernel_size = kern2, stride = 2, padding = pad2)
-        self.cat92 = concatenate([self.convT91, self.act14])
-        self.conv93 = nn.Conv2d(in_channels = 8, out_channels = 8, kernel_size = kern3, padding = pad)
-        self.act94 = nn.ReLU()
-        self.conv95 = nn.Conv2d(in_channels = 8, out_channels = 8, kernel_size = kern3, padding = pad)
-        self.act96 = nn.ReLU()
-
-
+        self.conv51 = nn.Conv2d(in_channels = 64, out_channels = 128, kernel_size = 3, padding = pad)
+        self.conv53 = nn.Conv2d(in_channels = 128, out_channels = 128, kernel_size = 3, padding = pad)
+        self.convT61 = nn.ConvTranspose2d(in_channels = 128, out_channels =  64, kernel_size = 2, stride = 2, output_padding = 2)
+        
+        self.conv63 = nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = 3, padding = pad)
+        self.conv65 = nn.Conv2d(in_channels = 64, out_channels = 64, kernel_size = 3, padding = pad)
+        self.convT71 = nn.ConvTranspose2d(in_channels = 64, out_channels =  32, kernel_size = 2, stride = 2, output_padding = 2)
+        
+        self.conv73 = nn.Conv2d(in_channels = 32, out_channels = 32, kernel_size = 3, padding = pad)
+        self.conv75 = nn.Conv2d(in_channels = 32, out_channels = 32, kernel_size = 3, padding = pad)
+        self.convT81 = nn.ConvTranspose2d(in_channels = 32, out_channels =  16, kernel_size = 2, stride = 2, output_padding = 2)
+        
+        self.conv83 = nn.Conv2d(in_channels = 16, out_channels = 16, kernel_size = 3, padding = pad)
+        self.conv85 = nn.Conv2d(in_channels = 16, out_channels = 16, kernel_size = 3, padding = pad)
+        self.convT91 = nn.ConvTranspose2d(in_channels = 16, out_channels =  8, kernel_size = 2, stride = 2, output_padding = 2)
+        
+        self.conv93 = nn.Conv2d(in_channels = 8, out_channels = 8, kernel_size = 3, padding = pad)
+        self.conv95 = nn.Conv2d(in_channels = 8, out_channels = 8, kernel_size = 3, padding = pad)
         self.output_conv = Conv2d(in_channels = 8, out_channels = 1, kernel_size = 1)
-        self.output = nn.Sigmoid()
+        self.output_fn = nn.Sigmoid()
 
     def forward(self, x):
         x1 = self.conv11(x)
-        x2 = self.act12(x1)
-        x3 = self.conv13(x2)
-        x4 = self.act14(x3)
-        x5 = self.pool15(x4)
+        x2 = self.conv13(F.relu(x1))
+        x3 = self.pool15(F.relu(x2))
 
-        x6 = self.conv21(x5)
-        x7 = self.act22(x6)
-        x8 = self.conv23(x7)
-        x9 = self.act24(x8)
-        x10 = self.pool25(x9)
+        x4 = self.conv21(x3)
+        x5 = self.conv23(F.relu(x4))
+        x6 = self.pool25(F.relu(x5))
 
-        x11 = self.conv31(x10)
-        x12 = self.act32(x11)
-        x13 = self.conv33(x12)
-        x14 = self.act34(x13)
-        x15 = self.pool35(x14)
+        x7 = self.conv31(x6)
+        x8 = self.conv33(F.relu(x7))
+        x9 = self.pool35(F.relu(x8))
 
-        x16 = self.conv41(x15)
-        x17 = self.act42(x16)
-        x18 = self.conv43(x17)
-        x19 = self.act44(x18)
-        x20 = self.pool45(x19)
+        x10 = self.conv41(x9)
+        x11 = self.conv43(F.relu(x10))
+        x12 = self.pool45(F.relu(x11))
 
-        x21 = self.conv51(x20)
-        x22 = self.act52(x21)
-        x23 = self.conv53(x22)
-        x24 = self.act54(x23)
+        x13 = self.conv51(x12)
+        x14 = self.conv53(F.relu(x13))
 
-        x25 = self.convT61(x24)
-        x26 = self.cat62(x25)
-        x27 = self.conv63(x26)
-        x28 = self.act64(x27)
-        x29 = self.conv65(x28)
-        x30 = self.act66(x29)
+        x15 = self.convT61(F.relu(x14))
+        x16 = self.conv63(torch.cat((x11, x15), 1))
+        x17 = self.conv65(F.relu(x16))
 
-        x31 = self.convT71(x30)
-        x32 = self.cat72(x31)
-        x34 = self.conv73(x32)
-        x35 = self.act74(x33)
-        x36 = self.conv75(x34)
-        x37 = self.act76(x35)
+        x18 = self.convT71(F.relu(x17))
+        x19 = self.conv73(torch.cat((x8, x18), 1))
+        x20 = self.conv75(F.relu(x19))
 
-        x38 = self.convT81(x37)
-        x39 = self.cat82(x38)
-        x40 = self.conv83(x39)
-        x41 = self.act84(x40)
-        x42 = self.conv85(x41)
-        x43 = self.act86(x42)
+        x21 = self.convT81(F.relu(x20))
+        x22 = self.conv83(torch.cat((x5, x21), 1))
+        x23 = self.conv85(F.relu(x22))
 
-        x44 = self.convT91(x43)
-        x45 = self.cat92(x44)
-        x46 = self.conv93(x45)
-        x47 = self.act94(x46)
-        x48 = self.conv95(x47)
-        x49 = self.act96(x48)
+        x24 = self.convT91(F.relu(x23))
+        x25 = self.conv93(torch.cat((x2, x24), 1))
+        x26 = self.conv95(F.relu(x25))
 
-        x50 = self.output_conv(x49)
-        x51 = self.output(x50)
-        return x51
+        x27 = self.output_conv(F.relu(x26))
+        x_out = self.output_fn(x27)
+        return x_out
 
-    def samePad(filter, stride):
-        return int(float(filter - stride)/2)
+def samePad(filterSize, stride):
+    return int(float(filterSize - stride)/2)
