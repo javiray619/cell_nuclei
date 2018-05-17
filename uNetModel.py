@@ -3,8 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-# python 3 confusing imports :(
-#from .unet_parts import *
+# Model based on CellNuclei.ipynb reference [1]
 
 class UNet(nn.Module):
     def __init__(self):
@@ -71,7 +70,6 @@ class UNet(nn.Module):
         self.output_fn = nn.Sigmoid()
 
     def forward(self, x):
-        x0 = x - torch.mean(torch.mean(x, axis = 3), axis = 2)
         x1 = self.conv11(x)
         x2 = self.conv13(F.relu(x1))
         x3 = self.pool15(F.relu(x2))
@@ -110,7 +108,7 @@ class UNet(nn.Module):
 
         x27 = self.conv96(F.relu(x26))
         x_out = self.output_fn(x27)
-        return x_out
+        return (x_out > .5)
 
 def samePad(filterSize, stride):
     return int(float(filterSize - stride)/2)
