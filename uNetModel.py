@@ -71,6 +71,7 @@ class UNet(nn.Module):
         self.output_fn = nn.Sigmoid()
 
     def forward(self, x):
+        x0 = x - torch.mean(torch.mean(x, axis = 3), axis = 2)
         x1 = self.conv11(x)
         x2 = self.conv13(F.relu(x1))
         x3 = self.pool15(F.relu(x2))
