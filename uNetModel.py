@@ -3,7 +3,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-# Model based on CellNuclei.ipynb reference [1]
+# python 3 confusing imports :(
+#from .unet_parts import *
 
 class UNet(nn.Module):
     def __init__(self):
@@ -108,7 +109,7 @@ class UNet(nn.Module):
 
         x27 = self.conv96(F.relu(x26))
         x_out = self.output_fn(x27)
-        return (x_out > .5)
+        return x_out
 
 def samePad(filterSize, stride):
     return int(float(filterSize - stride)/2)
