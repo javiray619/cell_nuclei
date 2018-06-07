@@ -3,8 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-# python 3 confusing imports :(
-#from .unet_parts import *
+# Model based on CellNuclei.ipynb reference [1]
 
 class UNet(nn.Module):
     def __init__(self):
